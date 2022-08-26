@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
-const User = require("../models/User");
-const isAuthentificated = require("../middleware/isAuthentificated");
+//const isAuthenticated = require("../middleware/isAuthenticated");
+
 
 router.get("/characters", async (req, res) => {
   try {
@@ -36,7 +36,6 @@ router.get("/characters", async (req, res) => {
         "." +
         arrayCharacters[i].thumbnail.extension;
 
-  
       if (nameCharacter) {
         objectCharac.name = nameCharacter;
       }
@@ -66,7 +65,7 @@ router.get("/characters", async (req, res) => {
 });
 
 
-router.get("/character/:characterId", isAuthentificated, async (req, res) => {
+router.get("/character/:characterId",  async (req, res) => {
   try {
 
     const { characterId } = req.params;

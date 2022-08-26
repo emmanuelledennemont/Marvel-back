@@ -5,6 +5,8 @@ const uid2 = require("uid2");
 const SHA256 = require("crypto-js/sha256");
 const encBase64 = require("crypto-js/enc-base64");
 
+const isAuthenticated = require("../middleware/isAuthenticated");
+
 const router = express.Router();
 
 const User = require("../models/User");
@@ -100,6 +102,9 @@ router.post("/user/login", async (req, res) => {
       });
     }
   });
+
+
+  
  
 
 module.exports = router;

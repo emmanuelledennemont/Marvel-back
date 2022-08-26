@@ -2,52 +2,54 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 
-const isAuthenticated = require("../middleware/isAuthentificated");
 
-router.get("/comics", isAuthenticated, async (req, res) => {
+router.get("/comics", async (req, res) => {
   try {
-    const {  title, page = 1, limit = 100} = req.query;
+    const { title, page = 1, limit = 100 } = req.query;
     let skip = limit * page - limit;
     const response = await axios.get(
       `${process.env.API_MARVEL_URL}/comics?apiKey=${
         process.env.MARVEL_API_KEY
-      }${title ? `&title=${title}` : ""}&limit=${limit}&skip=${skip}
+      }&skip=${skip}&limit=${limit}&title=${title ? title : ""
         
       }`
     );
+    
     const numberOfPages = Math.ceil(response.data.count / limit);
 
     const arrayComicsData = response.data.results;
     let arrayComics = [];
     let objAnswer = {};
 
-    for (let i = 0; i < arrayComics.length; i++) {
+  
+    for (let i = 0; i < arrayComicsData.length; i++) {
       let objectComics = {};
-      let titleComics = arrayComics[i].title;
-      let descriptionComics = arrayComics[i].description;
-      let pictureComics =
-        arrayComics[i].thumbnail.path +
+
+      let comicsTitle = arrayComicsData[i].title;
+      let comicsDescription = arrayComicsData[i].description;
+      let comicsPictureUrl =
+        arrayComicsData[i].thumbnail.path +
         "." +
-        arrayComics[i].thumbnail.extension;
+        arrayComicsData[i].thumbnail.extension;
 
-      if (titleComics) {
-        objectComics.title = titleComics;
+      if (comicsTitle) {
+        objectComics.title = comicsTitle;
       }
 
-      if (descriptionComics) {
-        objectComics.description = descriptionComics;
+      if (comicsDescription) {
+        objectComics.description = comicsDescription;
       }
 
-      if (pictureComics) {
-        objectComics.picture = pictureComics;
+      if (comicsPictureUrl) {
+        objectComics.picture = comicsPictureUrl;
       }
 
-      arrayComicsData.push(objectComics);
+      arrayComics.push(objectComics);
     }
-
 
     objAnswer.numberOfPages = numberOfPages;
     objAnswer.comics = arrayComics;
+
 
     res.status(200).json(objAnswer);
   } catch (error) {
@@ -55,7 +57,7 @@ router.get("/comics", isAuthenticated, async (req, res) => {
   }
 });
 
-router.get("/comics/:characterId", isAuthenticated, async (req, res) => {
+router.get("/comics/:characterId", async (req, res) => {
   try {
     const { characterId } = req.params;
     const response = await axios.get(
